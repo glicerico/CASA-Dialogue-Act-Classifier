@@ -26,7 +26,7 @@ if __name__=="__main__":
     early_stopping = EarlyStopping(
         monitor=config["monitor"],
         min_delta=config["min_delta"],
-        patience=10,
+        patience=30,
     )
     checkpoints = ModelCheckpoint(
         filepath=config["filepath"],
@@ -36,11 +36,21 @@ if __name__=="__main__":
 
     # base = ContextAwareDAC()
     # tokenizer = AutoTokenizer.from_pretrained(config['model_name'])
-    model = LightningModel(config=config)
     
     if config['restart'] and config['restart_checkpoint']:
-        trainer = pl.Trainer(resume_from_checkpoint=config['restart_checkpoint'])
+        model = LightningModel.load_from_checkpoint(config['restart_checkpoint'], config=config)
+        trainer = pl.Trainer(resume_from_checkpoint=config['restart_checkpoint'],
+                logger=logger,
+                gpus=[0],
+                checkpoint_callback=checkpoints,
+                callbacks=[early_stopping],
+                default_root_dir="./models/",
+                max_epochs=config["epochs"],
+                precision=config["precision"],
+                automatic_optimization=True
+                )
     else:
+        model = LightningModel(config=config)
         trainer = pl.Trainer(
             logger=logger,
             gpus=[0],
