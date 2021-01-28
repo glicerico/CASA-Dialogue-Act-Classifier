@@ -38,15 +38,17 @@ class ContextAwareDAC(nn.Module):
         self.hx = torch.randn((2, 1, hidden_size), device=self.device)
         
     
-    def forward(self, batch):
+    # def forward(self, batch):
+    def forward(self, input_ids=None, attention_mask=None, seq_len=None):
         """
             x.shape = [batch, seq_len, hidden_size]
         """
         
         
-        outputs = self.utterance_rnn(input_ids=batch['input_ids'], attention_mask=batch['attention_mask'], seq_len=batch['seq_len'].tolist())
+        # outputs = self.utterance_rnn(input_ids=batch['input_ids'], attention_mask=batch['attention_mask'], seq_len=batch['seq_len'].tolist())
+        outputs = self.utterance_rnn(input_ids=input_ids, attention_mask=attention_mask, seq_len=seq_len.tolist())
         
-        batch = batch['input_ids'].shape[0]
+        # batch = batch['input_ids'].shape[0]
         
         # create an empty feature vector 
         features = torch.empty((0, self.in_features), device=self.device)
