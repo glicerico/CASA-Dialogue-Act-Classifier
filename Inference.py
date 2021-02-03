@@ -11,7 +11,8 @@ from Trainer import LightningModel
 
 
 def convert_onnx(model_path, config):
-    my_device = torch.device('cuda')
+    # my_device = torch.device('cuda')
+    my_device = torch.device('cpu')
 
     model = LightningModel(config=config)
     model = model.to(my_device)
@@ -94,9 +95,9 @@ class DialogClassifier:
 
 
 if __name__ == '__main__':
-    convert_onnx(model_path='epoch=5.ckpt', config=config)
+    convert_onnx(model_path='/home/andres/Dropbox/Public/epoch=11-val_accuracy=0.776028.ckpt', config=config)
 
-    clf = DialogClassifier(model_path='epoch=5.onnx', config=config)
+    clf = DialogClassifier(model_path='/home/andres/Dropbox/Public/epoch=11-val_accuracy=0.776028.onnx', config=config)
     testing_data = ['Uh-huh.', 'Well, I think its a pretty good idea.', 'Okay.']
     print(clf.predict(testing_data))
-    
+
