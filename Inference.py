@@ -20,6 +20,8 @@ def convert_onnx(model_path, config):
 
     example_loader = model.test_dataloader()
     batch = next(iter(example_loader))
+    print(batch['text'])
+    print(batch['label'])
 
     example_input = {'input_ids': batch['input_ids'].to(my_device),
                      'attention_mask': batch['attention_mask'].to(my_device),
@@ -95,9 +97,9 @@ class DialogClassifier:
 
 
 if __name__ == '__main__':
-    convert_onnx(model_path='/home/andres/Dropbox/Public/epoch=11-val_accuracy=0.776028.ckpt', config=config)
+    convert_onnx(model_path='checkpoints/epoch=28-val_accuracy=0.746056.ckpt', config=config)
 
-    clf = DialogClassifier(model_path='/home/andres/Dropbox/Public/epoch=11-val_accuracy=0.776028.onnx', config=config)
+    clf = DialogClassifier(model_path='checkpoints/epoch=11-val_accuracy=0.746056.onnx', config=config)
     testing_data = ['Uh-huh.', 'Well, I think its a pretty good idea.', 'Okay.']
     print(clf.predict(testing_data))
 
