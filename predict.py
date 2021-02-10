@@ -61,11 +61,15 @@ def main(argv):
     """
 
     input_file = argv[0]
-    ckpt_path = 'checkpoints/epoch=28-val_accuracy=0.746056.ckpt'  # Modify to use your checkpoint
+    if len(argv) == 2 and argv[1] == 'frozen':
+        ckpt_path = 'checkpoints/epoch=28-val_accuracy=0.746056.ckpt'  # Modify to use your checkpoint
+    else:
+        ckpt_path = 'checkpoints/epoch=5-val_accuracy=0.779101.ckpt'  # Modify to use your checkpoint
 
     clf = DialogClassifier(checkpoint_path=ckpt_path, config=config, my_device='cpu')  # Choose 'cuda' if desired
     classes = clf.get_classes()
     inv_classes = {v: k for k, v in classes.items()}  # Invert classes dictionary
+
 
     with open(input_file, 'r') as fi:
         utterances = fi.read().splitlines()
@@ -75,7 +79,9 @@ def main(argv):
 
     results = pd.DataFrame(list(zip(predicted_acts, utterances)), columns=["DamslActTag", "Text"])
     filename = os.path.basename(input_file)
-    results.to_csv(os.path.splitext(filename)[0] + ".out", index=False)
+    if not os.path.exists('output'):
+        os.makedirs('output')
+    results.to_csv('output/' + os.path.splitext(filename)[0] + ".out", index=False)
 
     print("-------------------------------------")
     print("Predicted Speech Act, Utterance")
