@@ -63,6 +63,8 @@ def main(argv):
     input_file = argv[0]
     if len(argv) == 2 and argv[1] == 'frozen':
         ckpt_path = 'checkpoints/epoch=28-val_accuracy=0.746056.ckpt'  # Modify to use your checkpoint
+    elif len(argv) == 2 and argv[1] == 'grace':
+        ckpt_path = 'checkpoints/epoch=22-val_accuracy=0.756666.ckpt'  # Modify to use your checkpoint
     else:
         ckpt_path = 'checkpoints/epoch=5-val_accuracy=0.779101.ckpt'  # Modify to use your checkpoint
 
