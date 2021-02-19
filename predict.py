@@ -1,3 +1,4 @@
+import argparse
 import os
 import pandas as pd
 import sys
@@ -53,34 +54,39 @@ class DialogClassifier:
         return outputs
 
 
-def main(argv):
+def main():
     """
     Predict speech acts for the utterances in input file
     :param argv: Takes 1 argument. File with utterances to classify, one per line.
     :return: Prints file with utterances tagged with speech act
     """
 
-    input_file = argv[0]
-    if len(argv) == 2 and argv[1] == 'frozen':
+    ap = argparse.ArgumentParser()
+    ap.add_argument("input_file", help="Input file")
+    ap.add_argument("-t", "--training", default="grace", choices=["frozen", "grace", "unfrozen"], help="Training round. Default: 'grace'")
+    ap.add_argument("-d", "--device", default="cuda", choices=["cpu", "cuda"], help="Device. Default: 'cuda'")
+
+    args = vars(ap.parse_args())
+
+    if args['training'] == 'frozen':
         ckpt_path = 'checkpoints/epoch=28-val_accuracy=0.746056.ckpt'  # Modify to use your checkpoint
-    elif len(argv) == 2 and argv[1] == 'grace':
+    if args['training'] == 'grace':
         ckpt_path = 'checkpoints/epoch=22-val_accuracy=0.756666.ckpt'  # Modify to use your checkpoint
-    else:
+    elif args['training'] == "unfrozen":
         ckpt_path = 'checkpoints/epoch=5-val_accuracy=0.779101.ckpt'  # Modify to use your checkpoint
 
-    clf = DialogClassifier(checkpoint_path=ckpt_path, config=config, my_device='cpu')  # Choose 'cuda' if desired
+    clf = DialogClassifier(checkpoint_path=ckpt_path, config=config, my_device=args['device'])  # Choose 'cuda' if desired
     classes = clf.get_classes()
     inv_classes = {v: k for k, v in classes.items()}  # Invert classes dictionary
 
-
-    with open(input_file, 'r') as fi:
+    with open(args['input_file'], 'r') as fi:
         utterances = fi.read().splitlines()
 
     predictions = clf.predict(utterances)
     predicted_acts = [inv_classes[prediction] for prediction in predictions]
 
     results = pd.DataFrame(list(zip(predicted_acts, utterances)), columns=["DamslActTag", "Text"])
-    filename = os.path.basename(input_file)
+    filename = os.path.basename(args['input_file'])
     if not os.path.exists('output'):
         os.makedirs('output')
     results.to_csv('output/' + os.path.splitext(filename)[0] + ".out", index=False)
@@ -94,4 +100,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()
