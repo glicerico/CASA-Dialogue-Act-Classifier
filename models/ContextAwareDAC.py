@@ -8,7 +8,7 @@ from .ContextAwareAttention import ContextAwareAttention
 
 class ContextAwareDAC(nn.Module):
     
-    def __init__(self, model_name="roberta-base", hidden_size=768, num_classes=18, device=torch.device("cpu")):
+    def __init__(self, model_name="roberta-base", hidden_size=768, num_classes=18, device=torch.device("cuda")):
         
         super(ContextAwareDAC, self).__init__()
         

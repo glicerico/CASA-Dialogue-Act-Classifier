@@ -14,7 +14,7 @@ class DialogClassifier:
     Class to perform inference from a pre-saved checkpoint
     """
 
-    def __init__(self, checkpoint_path, config, my_device='cpu'):
+    def __init__(self, checkpoint_path, config, my_device='cuda'):
         self.config = config
         self.tokenizer = AutoTokenizer.from_pretrained(config['model_name'])
         self.model = LightningModel(config=config)
@@ -64,7 +64,6 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("input_file", help="Input file")
     ap.add_argument("-t", "--training", default="grace", choices=["frozen", "grace", "unfrozen"], help="Training round. Default: 'grace'")
-    ap.add_argument("-d", "--device", default="cuda", choices=["cpu", "cuda"], help="Device. Default: 'cuda'")
 
     args = vars(ap.parse_args())
 
@@ -75,7 +74,7 @@ def main():
     elif args['training'] == "unfrozen":
         ckpt_path = 'checkpoints/epoch=5-val_accuracy=0.779101.ckpt'  # Modify to use your checkpoint
 
-    clf = DialogClassifier(checkpoint_path=ckpt_path, config=config, my_device=args['device'])  # Choose 'cuda' if desired
+    clf = DialogClassifier(checkpoint_path=ckpt_path, config=config, my_device=config['device'])
     classes = clf.get_classes()
     inv_classes = {v: k for k, v in classes.items()}  # Invert classes dictionary
 
