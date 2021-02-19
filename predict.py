@@ -40,8 +40,8 @@ class DialogClassifier:
         ).to(self.config['device'])
         seq_len = [len(self.tokenizer.tokenize(utt)) for utt in data]
 
-        inputs['input_ids'] = input_encoding['input_ids'].squeeze()
-        inputs['attention_mask'] = input_encoding['attention_mask'].squeeze()
+        inputs['input_ids'] = input_encoding['input_ids']
+        inputs['attention_mask'] = input_encoding['attention_mask']
         inputs['seq_len'] = torch.Tensor(seq_len).to(self.config['device'])
 
         return inputs
