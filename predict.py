@@ -14,12 +14,12 @@ class DialogClassifier:
     Class to perform inference from a pre-saved checkpoint
     """
 
-    def __init__(self, checkpoint_path, config, my_device='cuda'):
+    def __init__(self, checkpoint_path, config):
         self.config = config
         self.tokenizer = AutoTokenizer.from_pretrained(config['model_name'])
         self.model = LightningModel(config=config)
-        self.model = self.model.to(my_device)
-        self.model.load_state_dict(torch.load(checkpoint_path, map_location=my_device)['state_dict'])
+        self.model = self.model.to(config['device'])
+        self.model.load_state_dict(torch.load(checkpoint_path, map_location=config['device'])['state_dict'])
 
     def get_classes(self):
         return self.model.classes
@@ -74,7 +74,7 @@ def main():
     elif args['training'] == "unfrozen":
         ckpt_path = 'checkpoints/epoch=5-val_accuracy=0.779101.ckpt'  # Modify to use your checkpoint
 
-    clf = DialogClassifier(checkpoint_path=ckpt_path, config=config, my_device=config['device'])
+    clf = DialogClassifier(checkpoint_path=ckpt_path, config=config)
     classes = clf.get_classes()
     inv_classes = {v: k for k, v in classes.items()}  # Invert classes dictionary
 
